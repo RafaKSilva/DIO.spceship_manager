@@ -1,0 +1,58 @@
+CREATE DATABASE SpaceshipManager
+USE SpaceshipManager
+GO
+
+CREATE TABLE Naves (
+	IdNave int NOT NULL,
+	Nome varchar(100) NOT NULL,
+	Modelo varchar(150) NOT NULL,
+	Passageiros int NOT NULL,
+	Carga float NOT NULL,
+	Classe varchar(100) NOT NULL
+)
+ALTER TABLE Naves ADD CONSTRAINT FK_Naves PRIMARY KEY(IdNave) 
+GO
+
+CREATE TABLE Planetas (
+	IdPlaneta int NOT NULL,
+	Nome varchar(50) NOT NULL,
+	Rotacao  float NOT NULL,
+	Orbita float NOT NULL,
+	Diametro float NOT NULL,
+	Clima varchar(50) NOT NULL,
+	Populacao int NOT NULL
+)
+ALTER TABLE Planetas ADD CONSTRAINT PK_Planetas PRIMARY KEY (IdPlaneta);
+GO
+
+CREATE TABLE Pilotos (
+	IdPiloto int NOT NULL,
+	Nome varchar(200) NOT NULL,
+	AnoNascimento varchar(10) NOT NULL,
+	IdPlaneta int NOT NULL
+)
+ALTER TABLE Pilotos ADD CONSTRAINT PK_Pilotos PRIMARY KEY (IdPiloto);
+ALTER TABLE Pilotos ADD CONSTRAINT FL_Planetas_Pilotos FOREIGN KEY (IdPlaneta) REFERENCES Planeta(IdPlaneta)
+GO
+
+CREATE TABLE PilotosNaves (
+	IdPiloto int NOT NULL,
+	IdNave int NOT NULL,
+	FlagAutorizado bit NOT NULL
+)
+ALTER TABLE PilotosNaves ADD CONSTRAINT PK_PilotosNaves PRIMARY KEY (IdPiloto,IdNave)
+ALTER TABLE PilotosNaves ADD CONSTRAINT FK_PilotosNaves_Pilotos FOREIGN KEY (IdPiloto) REFERENCES Pilotos(IdPiloto)
+ALTER TABLE PilotosNaves ADD CONSTRAINT FK_PilotosNaves_Naves FOREIGN KEY (IdNave) REFERENCES Naves(IdNave)
+ALTER TABLE PilotosNaves ADD CONSTRAINT DF_PilotosNaves_FlagAutorizado DEFAULT(1) FOR FlagAutorizado
+GO
+
+CREATE TABLE HistoricoViagens (
+	IdNave int NOT NULL,
+	IdPiloto int NOT NULL,
+	DtSaida datetime NOT NULL,
+	DtChegada datetime NULL
+)
+ALTER TABLE HistoricoViagens ADD CONSTRAINT FK_HistoricoViagens_PilotoNaves FOREIGN KEY(IdPiloto,IdNave) 
+REFERENCES PilotosNaves(IdPiloto,IdNave)
+GO
+ALTER TABLE HistoricoViagens CHECK CONSTRAINT FK_HistoricoViagens_PilotoNaves 
